@@ -1,0 +1,26 @@
+[project]
+name = "web-ui"
+version = "0.1.0"
+description = "InternLM Compass Web UI - A browser automation tool with AI agent"
+requires-python = ">=3.11"
+dependencies = [
+    "browser-use==0.1.40",
+    "pyperclip==1.9.0",
+    "gradio==5.10.0",
+    "json-repair",
+    "langchain-mistralai==0.2.4",
+    "langchain-google-genai==2.0.8",
+    "MainContentExtractor==0.0.4",
+    "python-dotenv",
+    "playwright",
+    "langchain-ollama",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+]
