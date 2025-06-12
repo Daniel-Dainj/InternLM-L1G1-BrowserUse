@@ -14,6 +14,7 @@ dependencies = [
     "python-dotenv",
     "playwright",
     "langchain-ollama",
+    "langchain>=0.3.25",
 ]
 
 [tool.uv]
@@ -48,12 +49,20 @@ select = [
 
 ignore = [
     "E501", # line too long (handled by formatter)
+    "B006", # Do not use assert in tests
+    "B008", # Do not use assert in tests
+    "B009", # Do not use assertRaises in tests
     "D100", # Missing docstring in public module
     "D101", # Missing docstring in public class
     "D102", # Missing docstring in public method
     "D103", # Missing docstring in public function
     "D104", # Missing docstring in public package
     "D105", # Missing docstring in magic method
+    "D107", # Missing docstring in __init__
+    "D200", # One-line docstring should fit on one line with quotes
+    "D203", # 1 blank line required before class docstring
+    "D415", # Missing trailing punctuation in docstring
+    "E402", # module level import not at top of file
 ]
 
 [tool.ruff.lint.pydocstyle]

@@ -1,40 +1,29 @@
 from __future__ import annotations
 
 import logging
-import pdb
-from typing import List, Optional, Type, Dict
 
-from browser_use.agent.message_manager.service import MessageManager
-from browser_use.agent.message_manager.views import MessageHistory
-from browser_use.agent.prompts import SystemPrompt, AgentMessagePrompt
-from browser_use.agent.views import ActionResult, AgentStepInfo, ActionModel
-from browser_use.browser.views import BrowserState
-from browser_use.agent.message_manager.service import MessageManagerSettings
+from browser_use.agent.message_manager.service import (
+    MessageManager,
+    MessageManagerSettings,
+)
+from browser_use.agent.prompts import AgentMessagePrompt
 from browser_use.agent.views import (
+    ActionModel,
     ActionResult,
-    AgentOutput,
     AgentStepInfo,
     MessageManagerState,
 )
-from langchain_core.language_models import BaseChatModel
-from langchain_anthropic import ChatAnthropic
-from langchain_core.language_models import BaseChatModel
+from browser_use.browser.views import BrowserState
 from langchain_core.messages import (
-    AIMessage,
-    BaseMessage,
     HumanMessage,
-    ToolMessage,
     SystemMessage,
 )
-from langchain_openai import ChatOpenAI
-from ..utils.llm import DeepSeekR1ChatOpenAI
-from .custom_prompts import CustomAgentMessagePrompt
 
 logger = logging.getLogger(__name__)
 
 
 class CustomMessageManagerSettings(MessageManagerSettings):
-    agent_prompt_class: Type[AgentMessagePrompt] = AgentMessagePrompt
+    agent_prompt_class: type[AgentMessagePrompt] = AgentMessagePrompt
 
 
 class CustomMessageManager(MessageManager):
@@ -88,9 +77,9 @@ class CustomMessageManager(MessageManager):
     def add_state_message(
         self,
         state: BrowserState,
-        actions: Optional[List[ActionModel]] = None,
-        result: Optional[List[ActionResult]] = None,
-        step_info: Optional[AgentStepInfo] = None,
+        actions: list[ActionModel] | None = None,
+        result: list[ActionResult] | None = None,
+        step_info: AgentStepInfo | None = None,
         use_vision=True,
     ) -> None:
         """Add browser state as human message"""

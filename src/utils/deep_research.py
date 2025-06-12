@@ -1,34 +1,26 @@
-import pdb
-
 from dotenv import load_dotenv
 
 load_dotenv()
 import asyncio
-import os
-import sys
-import logging
-from pprint import pprint
-from uuid import uuid4
-from src.utils import utils
-from src.agent.custom_agent import CustomAgent
 import json
+import logging
+import os
 import re
-from browser_use.agent.service import Agent
-from browser_use.browser.browser import BrowserConfig, Browser
+from uuid import uuid4
+
 from browser_use.agent.views import ActionResult
-from browser_use.browser.context import BrowserContext
-from browser_use.controller.service import Controller, DoneAction
-from main_content_extractor import MainContentExtractor
-from langchain.schema import SystemMessage, HumanMessage
-from json_repair import repair_json
-from src.agent.custom_prompts import CustomSystemPrompt, CustomAgentMessagePrompt
-from src.controller.custom_controller import CustomController
-from src.browser.custom_browser import CustomBrowser
-from src.browser.custom_context import BrowserContextConfig, BrowserContext
+from browser_use.browser.browser import BrowserConfig
 from browser_use.browser.context import (
-    BrowserContextConfig,
-    BrowserContextWindowSize,
+    BrowserContext,
 )
+from json_repair import repair_json
+from langchain_core.messages import HumanMessage, SystemMessage
+from main_content_extractor import MainContentExtractor
+
+from src.agent.custom_agent import CustomAgent
+from src.agent.custom_prompts import CustomAgentMessagePrompt, CustomSystemPrompt
+from src.browser.custom_browser import CustomBrowser
+from src.controller.custom_controller import CustomController
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +38,7 @@ async def deep_research(task, llm, agent_state=None, **kwargs):
     extra_chromium_args = []
 
     if use_own_browser:
-        cdp_url = os.getenv("CHROME_CDP", kwargs.get("chrome_cdp", None))
+        cdp_url = os.getenv("CHROME_CDP", kwargs.get("chrome_cdp"))
         # TODO: if use own browser, max query num must be 1 per iter, how to solve it?
         max_query_num = 1
         chrome_path = os.getenv("CHROME_PATH", None)
@@ -242,7 +234,7 @@ Provide your output as a JSON formatted list. Each item in the list must adhere 
                 session = await browser_context.get_session()
                 pages = session.context.pages
                 await browser_context.create_new_tab()
-                for page_id, page in enumerate(pages):
+                for _page_id, page in enumerate(pages):
                     await page.close()
 
             else:
@@ -261,12 +253,9 @@ Provide your output as a JSON formatted list. Each item in the list must adhere 
                     )
                     for task in query_tasks
                 ]
-                query_results = await asyncio.gather(
-                    *[
-                        agent.run(max_steps=kwargs.get("max_steps", 10))
-                        for agent in agents
-                    ]
-                )
+                query_results = await asyncio.gather(*[
+                    agent.run(max_steps=kwargs.get("max_steps", 10)) for agent in agents
+                ])
 
             if agent_state and agent_state.is_stop_requested():
                 # Stop
@@ -287,7 +276,7 @@ Provide your output as a JSON formatted list. Each item in the list must adhere 
                     fw.write(query_result)
                 # split query result in case the content is too long
                 query_results_split = query_result.split("Extracted page content:")
-                for qi, query_result_ in enumerate(query_results_split):
+                for _qi, query_result_ in enumerate(query_results_split):
                     if not query_result_:
                         continue
                     else:
@@ -346,7 +335,7 @@ async def generate_final_report(task, history_infos, save_dir, llm, error_msg=No
 *   **Data-Driven Comparisons with Tables:**  **When appropriate and beneficial for enhancing clarity and impact, present data comparisons in well-structured Markdown tables. This is especially encouraged when dealing with numerical data or when a visual comparison can significantly improve the reader's understanding.**
 *   **Length Adherence:** When the user specifies a length constraint, meticulously stay within reasonable bounds of that specification, ensuring the content is appropriately scaled without sacrificing quality or completeness.
 *   **Comprehensive Instruction Following:** Pay meticulous attention to all details and nuances provided in the user instructions. Strive to fulfill every aspect of the user's request with the highest degree of accuracy and attention to detail, creating a report that not only meets but exceeds expectations for quality and professionalism.
-*   **Reference List Formatting:** The reference list at the end must be formatted as follows:  
+*   **Reference List Formatting:** The reference list at the end must be formatted as follows:
     `[1] Title (URL, if available)`
     **Each reference must be separated by a blank line to ensure proper spacing.** For example:
 
@@ -357,7 +346,7 @@ async def generate_final_report(task, history_infos, save_dir, llm, error_msg=No
     ```
     **Furthermore, ensure that the reference list is free of duplicates. Each unique source should be listed only once, regardless of how many times it is cited in the text.**
 *   **ABSOLUTE FINAL OUTPUT RESTRICTION:**  **Your output must contain ONLY the finished, publication-ready Markdown report. Do not include ANY extraneous text, phrases, preambles, meta-commentary, or markdown code indicators (e.g., "```markdown```"). The report should begin directly with the title and introductory paragraph, and end directly after the conclusion and the reference list (if applicable).**  **Your response will be deemed a failure if this instruction is not followed precisely.**
-        
+
 **Inputs:**
 
 1. **User Instruction:** The original instruction given by the user. This helps you determine what kind of information will be useful and how to structure your thinking.
