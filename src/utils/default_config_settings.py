@@ -1,6 +1,7 @@
 import os
 import pickle
 import uuid
+
 import gradio as gr
 
 
@@ -12,11 +13,11 @@ def default_config():
         "max_actions_per_step": 10,
         "use_vision": True,
         "tool_calling_method": "auto",
-        "llm_provider": "openai",
-        "llm_model_name": "gpt-4o",
+        "llm_provider": "intern",
+        "llm_model_name": "internvl-latest",
         "llm_num_ctx": 32000,
         "llm_temperature": 0.6,
-        "llm_base_url": "",
+        "llm_base_url": "https://chat.intern-ai.org.cn/api/v1",
         "llm_api_key": "",
         "use_own_browser": os.getenv("CHROME_PERSISTENT_SESSION", "false").lower()
         == "true",
@@ -29,7 +30,7 @@ def default_config():
         "save_recording_path": "./tmp/record_videos",
         "save_trace_path": "./tmp/traces",
         "save_agent_history_path": "./tmp/agent_history",
-        "task": "go to google.com and type 'OpenAI' click search and give me the first url",
+        "task": "去百度查询上海人工智能实验室的官网地址，然后告诉我网址",
     }
 
 
